@@ -1,0 +1,57 @@
+{% extends './base.html' %}
+
+{% block title %}Подробности объявления{% endblock %}
+<style>
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .img-fluid {
+        width: 100%;
+        height: auto;
+    }
+
+    .block {
+        padding: 50px 0;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .lead {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+
+</style>
+{% block content %}
+    <section class="block">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1>{{ food.title }}</h1>
+                    <p class="lead">Категория: {{ food.category }}</p>
+                    <img class="img-fluid" src="{{ food.image }}" alt="{{ food.title }}">
+                    <p class="lead">Цена: {{ food.price }}</p>
+                    <p class="lead">Количество: {{ food.count }}</p>
+                    <h4>Описание</h4>
+                    <p>{{ food.description }}</p>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

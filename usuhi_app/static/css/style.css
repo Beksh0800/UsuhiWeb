@@ -1,0 +1,42 @@
+.bag {
+    background-image: url('https://image.starterapp.co/w:1920/aHR0cHM6Ly9jZG4uc2FuaXR5LmlvL2ltYWdlcy90YW00OHQ0by9wcm9kdWN0aW9uL2IwNjg0NzQ5M2UzNDc2MGRhZjk2MGRjZjk1M2Q0MzFkOWQ3Y2Y5ODEtMzIwMHgxMDUyLnBuZw==');
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding: 20px;
+    width: 100%;
+    height: 300px;
+}
+
+.navbar {
+    color: white;
+    height: auto; /* Добавлено для автоматического расширения хедера */
+    width: auto;
+    display: flex;
+}
+
+.navbar-expanded {
+    height: auto; /* Добавлено для автоматического расширения хедера при раскрытии выпадающего меню */
+    width: auto;
+    display: flex;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+input {
+    width: 50%;
+    display: block;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #1f2229;
+    margin-bottom: 20px;
+}
+.title{
+    margin-left: 25px;
+    margin-top: 25px;
+}
+.len {
+    width: 160px; /* Измените значение на желаемую ширину */
+}

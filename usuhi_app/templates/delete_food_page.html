@@ -1,0 +1,17 @@
+{% extends './base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<section class="block">
+    <div class="container pt-5 pb-5">
+        <h1 class="title mb-5">Удалить объявления?</h1>
+        <form method="post" class="form-control">
+            {% csrf_token %}
+            {{ form }}
+            <button class="btn btn-danger" href="{% url 'delete_food_page' pk=food.pk %}">Удалить</button>
+            <a href="{% url 'food_page' %}" class="btn btn-primary" >Отменить</a>
+        </form>
+    </div>
+</section>
+{% endblock %}

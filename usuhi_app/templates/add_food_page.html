@@ -1,0 +1,18 @@
+{% extends './base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Добавить объявления{% endblock %}
+{% block content %}
+<section class="block">
+    <div class="container pt-5 pb-5">
+        <h1 class="title mb-5">Добавить объявления</h1>
+        <form method="post" class="form">
+            {% csrf_token %}
+            {{ form|crispy }}
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+
+        </form>
+    </div>
+</section>
+{% endblock %}
