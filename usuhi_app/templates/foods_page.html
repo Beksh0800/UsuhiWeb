@@ -17,7 +17,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ food.name }}</h5>
                                 <p class="card-text text-muted mb-3 "
-                                   style="max-height: 80px; overflow: hidden;">{{ food.description }}</p>
+                                   style="max-height: 80px; overflow: hidden;">{{ food.description|truncatewords:10 }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="badge bg-primary">Количество: {{ food.count }}</span>
                                     <span class="badge bg-primary"><strong>Цена: {{ food.price }}₸</strong></span>
@@ -37,7 +37,7 @@
                 {% endfor %}
             </div>
         </div>
-    
+
     </section>
 
 {% endblock %}

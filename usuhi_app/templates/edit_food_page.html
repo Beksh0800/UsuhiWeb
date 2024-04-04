@@ -10,7 +10,7 @@
         <form method="post" class="form-control">
             {% csrf_token %}
             {{ form|crispy }}
-            <button class="btn btn-primary" href="{% url 'edit_food_page' pk=food.pk %}">Изменить</button>
+            <button class="btn btn-primary" href="{% url 'edit_food_page' pk=food.pk %}">Сохранить изменений</button>
         </form>
     </div>
 </section>

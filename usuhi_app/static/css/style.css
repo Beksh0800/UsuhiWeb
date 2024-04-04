@@ -7,6 +7,7 @@
     height: 300px;
 }
 
+
 .navbar {
     color: white;
     height: auto; /* Добавлено для автоматического расширения хедера */
@@ -33,10 +34,13 @@ input {
     border: 1px solid #1f2229;
     margin-bottom: 20px;
 }
-.title{
+
+.title {
     margin-left: 25px;
     margin-top: 25px;
 }
+
 .len {
     width: 160px; /* Измените значение на желаемую ширину */
 }
+

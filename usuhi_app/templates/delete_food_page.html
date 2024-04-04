@@ -10,7 +10,7 @@
             {% csrf_token %}
             {{ form }}
             <button class="btn btn-danger" href="{% url 'delete_food_page' pk=food.pk %}">Удалить</button>
-            <a href="{% url 'food_page' %}" class="btn btn-primary" >Отменить</a>
+            <a href="{% url 'all_food_page' %}" class="btn btn-primary" >Отменить</a>
         </form>
     </div>
 </section>

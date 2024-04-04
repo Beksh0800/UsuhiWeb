@@ -12,37 +12,59 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f2f2f2;
+            background-color: #f8f9fa;
+            color: #343a40;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 20px auto; /* Добавлен отступ сверху и снизу */
-            padding: 20px;
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
+        .navbar-toggler {
+            border: none;
         }
 
-        p {
-            margin-bottom: 20px;
-            color: #666;
+        .navbar-nav .nav-link {
+            font-size: 18px;
+            font-weight: bold;
+            color: #343a40;
         }
 
-        .cards-container {
+        .navbar-nav .nav-link:hover {
+            color: #007bff;
+        }
+
+        .about-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .about-img img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+        }
+
+        .about-text {
+            flex: 1;
+            margin-left: 50px;
+            text-align: justify;
+        }
+
+        .team-cards {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            justify-content: center;
+            margin-top: 50px;
         }
 
         .card {
-            width: calc(25% - 20px); /* 4 карты в одну строку, вычитаем отступы */
-            margin-bottom: 20px;
+            width: calc(25% - 20px);
+            margin: 10px;
             padding: 20px;
-            border: 1px solid #ccc;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             background-color: #fff;
@@ -56,17 +78,30 @@
         .card img {
             width: 100%;
             border-radius: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         .card p {
             margin-bottom: 10px;
             color: #333;
+            font-size: 18px;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        footer p {
+            margin: 0;
         }
     </style>
 </head>
 <body>
-<header class="navbar navbar-expand-lg" style="background-color: rgba(255, 255, 255, 0.9);">
+<header class="navbar navbar-expanded navbar-expand-lg ml-5 mr-5" style="background-color: rgba(255, 255, 255, 0.9);">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'food_page' %}">USUSHI</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -78,68 +113,101 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{% url 'about_page' %}">О нас</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Рестораны</a>
-                </li>
             </ul>
             {% if user.is_authenticated %}
-                <ul class="navbar-nav">
-                {% if user.is_superuser %}
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">{{ user }}</a>
-                    </li>
-                {% endif %}
+                <div class="nav-item dropdown navbar-nav menu-horizontal menu">
+                    <button class="btn btn-primary dropdown-toggle len" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ user }}
+                    </button>
+                    <ul class="dropdown-menu menu-horizontal">
+                        <li><a class="dropdown-item" href="{% url 'logout_request' %}">Выход</a></li>
+                    </ul>
+                </div>
             {% else %}
                 <li>
-                    <a class="btn btn-primary " href="{% url 'signup_page' %}">Регистрация</a>
+                    <a class="btn btn-primary" href="{% url 'signup_page' %}">Регистрация</a>
                 </li>
                 <li>
                     <a class="btn btn-primary" href="{% url 'login_page' %}">Вход</a>
                 </li>
-
             {% endif %}
-            </ul>
+            {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="btn btn-primary" aria-current="page" href="{% url 'all_food_page' %}">Все блюда</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary" aria-current="page" href="{% url 'add_food_page' %}">Добавить</a>
+                </li>
+            {% endif %}
         </div>
     </div>
 </header>
 
-
-<div class="container">
-    <p>Мы - компания, специализирующаяся на продаже суши и других блюд японской кухни. Наша цель - предложить нашим
-        клиентам высококачественные продукты, приготовленные из свежих и натуральных ингредиентов.</p>
-    <p>Мы гордимся нашими блюдами, которые приготовлены с использованием лучших рецептов и традиций японской кухни.
-        Наша команда шеф-поваров обладает многолетним опытом работы и создает уникальные вкусовые сочетания, чтобы
-        порадовать вас и ваши вкусовые рецепторы.</p>
-    <p>Если у вас возникли вопросы или вы заинтересованы в заказе наших блюд, не стесняйтесь связаться с нами. Мы
-        сделаем все возможное, чтобы удовлетворить ваши потребности и создать незабываемый опыт для вас и ваших
-        гостей!</p>
-
-    <div class="cards-container">
-        <div class="card">
-            <img src="{% static 'photo/main_Developer.jpg' %}" alt="Фото сотрудника">
-            <p>Бекнұр Арыстан</p>
-            <p>Ведущий разработчик</p>
-        </div>
-
-        <div class="card">
-            <img src="{% static 'photo/cook.jpg' %}" alt="Фото сотрудника">
-            <p>Али Камзаев</p>
-            <p>Шеф-повар</p>
-        </div>
-
-        <div class="card">
-            <img src="{% static 'photo/бухгалтер.jpg' %}" alt="Фото сотрудника">
-            <p>Амангелді Абдулла</p>
-            <p>Помощник шеф-повара</p>
-        </div>
-
-        <div class="card">
-            <img src="{% static 'photo/sponsor.jpg' %}" alt="Фото спонсора">
-            <p>Нуриддинов Элдор</p>
-            <p>Спонсор компании</p>
+<section class="about">
+    <div class="container">
+        <h1 class="text-center">О нас</h1>
+        <div class="about-info">
+            <div class="about-img">
+                <img src="{% static 'photo/team.jpg' %}" alt="team">
+            </div>
+            <div class="about-text">
+                <p>Мы - компания, специализирующаяся на продаже суши и других блюд японской кухни. Наша цель -
+                    предложить нашим клиентам высококачественные продукты, приготовленные из свежих и натуральных
+                    ингредиентов.</p>
+                <p>Мы гордимся нашими блюдами, которые приготовлены с использованием лучших рецептов и традиций японской
+                    кухни. Наша команда шеф-поваров обладает многолетним опытом работы и создает уникальные вкусовые
+                    сочетания, чтобы порадовать вас и ваши вкусовые рецепторы.</p>
+                <p>Если у вас возникли вопросы или вы заинтересованы в заказе наших блюд, не стесняйтесь связаться с
+                    нами. Мы сделаем все возможное, чтобы удовлетворить ваши потребности и создать незабываемый опыт для
+                    вас и ваших гостей!</p>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<section class="team">
+    <div class="container">
+        <h1 class="text-center mt-5">Наша команда</h1>
+        <div class="team-cards">
+            <div class="card">
+                <img src="{% static 'photo/main_Developer.jpg' %}" class="card-img-top" alt="Фото сотрудника">
+                <div class="card-body">
+                    <p class="card-text">Бекнұр Арыстан</p>
+                    <p class="card-text">Ведущий разработчик</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static 'photo/cook.jpg' %}" class="card-img-top" alt="Фото сотрудника">
+                <div class="card-body">
+                    <p class="card-text">Али Камзаев</p>
+                    <p class="card-text">Шеф-повар</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static 'photo/бухгалтер.jpg' %}" class="card-img-top" alt="Фото сотрудника">
+                <div class="card-body">
+                    <p class="card-text">Амангелді Абдулла</p>
+                    <p class="card-text">Помощник шеф-повара</p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static 'photo/sponsor.jpg' %}" class="card-img-top" alt="Фото спонсора">
+                <div class="card-body">
+                    <p class="card-text">Нуриддинов Элдор</p>
+                    <p class="card-text">Спонсор компании</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>© 2024 Арыстан Бекнұр.</p>
+    </div>
+</footer>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
