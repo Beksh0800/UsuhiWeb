@@ -1,43 +1,51 @@
-{% extends './base.html' %}
+{% extends 'base_home.html' %}
+{% load static %}
 
 {% block title %}Главная{% endblock %}
 
 {% block content %}
     <section class="block">
-
-
         <div class="container">
-            <h1 class="mt-5 mb-4">Блюда</h1>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for food in food %}
-                    <div class="col">
-                        <div class="card h-100 shadow">
-                            <img src="{{ food.image }}" class="card-img-top" alt="{{ food.name }}"
-                                 style="object-fit: cover; height: 200px;">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ food.name }}</h5>
-                                <p class="card-text text-muted mb-3 "
-                                   style="max-height: 80px; overflow: hidden;">{{ food.description|truncatewords:10 }}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-primary">Количество: {{ food.count }}</span>
-                                    <span class="badge bg-primary"><strong>Цена: {{ food.price }}₸</strong></span>
+            <div class="row">
+                {% for food_type, food_name in FOOD_TYPES %}
+                    <h1 class="mt-5 mb-4">{{ food_name }}</h1>
+                    {% for food in foods %}
+                        {% if food.category == food_type %}
+                            <div class="col-md-3 mb-4">
+                                <div class="card h-100 shadow-sm">
+                                    <img src="{{ food.image }}" alt="">
+                                    <div class="card-body">
+                                        <h3 class="card-title">{{ food.name }}</h3>
+                                        <h4 class="mb-3">{{ food.price }}T </h4>
+                                        <p>Описание: </p>
+                                        <p>{{ food.description|truncatewords:3 }}</p>
+                                        <div class="card-footer bg-transparent d-grid">
+                                            <button class="btn btn-danger remove-from-cart-btn"
+                                                    data-food-id="{{ food.id }}" style="margin-right: 5px;">Удалить из
+                                                корзины
+                                            </button>
+                                            <button class="btn btn-secondary reduce-quantity-btn"
+                                                    data-food-id="{{ food.id }}" style="margin-right: 5px;">-
+                                            </button>
+                                            <button class="btn btn-primary add-to-cart-btn" data-food-id="{{ food.id }}"
+                                                    data-quantity="1" data-add-to-cart-url="{% url 'modify_cart' %}"
+                                                    style="margin-right: 5px;">Добавить в корзину
+                                            </button>
+                                            <button class="btn btn-secondary increase-quantity-btn"
+                                                    data-food-id="{{ food.id }}" style="margin-left: 5px;">+
+                                            </button>
+                                            <!-- Добавим отображение количества товаров рядом с кнопкой добавления в корзину -->
+                                            <span class="badge bg-secondary ms-2"
+                                                  id="cart-quantity-{{ food.id }}">0</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card-footer bg-transparent d-grid">
-                                <button class="btn btn-primary" type="button">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                         class="bi bi-cart4 me-1" viewBox="0 0 16 16">
-                                        <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l.5 2H5V5zM6 5v2h2V5zm3 0v2h2V5zm3 0v2h1.36l.5-2zm1.11 3H12v2h.61zM11 8H9v2h2zM8 8H6v2h2zM5 8H3.89l.5 2H5zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
-                                    </svg>
-                                    Добавить в корзину
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             </div>
         </div>
 
     </section>
-
 {% endblock %}

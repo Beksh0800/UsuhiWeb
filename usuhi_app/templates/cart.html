@@ -1,0 +1,42 @@
+{% extends 'base_home.html' %}
+{% load static %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+    <section id="cart" class="container mt-3">
+        <h2 class="text-center mb-4">Корзина</h2>
+        <div class="row">
+            {% for item in cart_items %}
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <div class="card h-100">
+                        <img src="{{ item.food.image }}" class="card-img-top" alt="{{ item.food.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.food.name }}</h5>
+                            <p class="card-text">{{ item.food.price }}T</p>
+                            <p class="card-text">{{ item.food.description|truncatewords:10 }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-secondary reduce-quantity-btn"
+                                        data-food-id="{{ item.food.id }}">-
+                                </button>
+                                <span class="badge bg-secondary" id="cart-quantity-{{ item.food.id }}">{{ item.quantity }}</span>
+
+                                <button type="button" class="btn btn-secondary increase-quantity-btn"
+                                        data-food-id="{{ item.food.id }}">+
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-danger remove-from-cart-btn"
+                                    data-food-id="{{ item.food.id}}">Удалить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center">Корзина пуста.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+{% endblock %}

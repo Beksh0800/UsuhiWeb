@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Food
-from django import forms
+from .models import Profile
 
 
 class NewsUserForm(UserCreationForm):
@@ -15,3 +15,8 @@ class AddFoodForm(forms.ModelForm):
     class Meta:
         model = Food
         fields = ('name', 'category', 'description', 'image', 'price', 'count')
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['date_of_birth', 'avatar']
