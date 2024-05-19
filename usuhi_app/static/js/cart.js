@@ -30,16 +30,24 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateCartDisplay(foodId, quantity) {
         const cartQuantityElement = document.getElementById(`cart-quantity-${foodId}`);
         const addToCartButton = document.querySelector(`.add-to-cart-btn[data-food-id="${foodId}"]`);
+        const isCartPage = document.body.classList.contains('cart'); // Предполагаем, что у <body> есть класс 'cart-page' на странице корзины
 
-        if (cartQuantityElement) {
+        if (cartQuantityElement && addToCartButton) {
             if (quantity > 0) {
                 cartQuantityElement.textContent = quantity;
                 addToCartButton.innerText = `В корзине (${quantity})`;
+            } else if (isCartPage) {
+                // Только на странице корзины удаляем элемент
+                cartQuantityElement.parentElement.parentElement.remove();
             } else {
+                // На главной странице просто обновляем текст
                 addToCartButton.innerText = "Добавить в корзину";
             }
+        } else {
+            console.error("Elements not found for foodId: " + foodId);
         }
     }
+
 
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -123,73 +131,73 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     increaseQuantityButtons.forEach(button => {
-    button.addEventListener('click', function () {
-        const foodId = parseInt(button.dataset.foodId);
-        const csrfToken = getCookie('csrftoken');
-        disableButtons([button]);
+        button.addEventListener('click', function () {
+            const foodId = parseInt(button.dataset.foodId);
+            const csrfToken = getCookie('csrftoken');
+            disableButtons([button]);
 
-        $.ajax({
-            type: 'POST',
-            url: '/modify_cart/',
-            data: {
-                'food_id': foodId,
-                'quantity': 1, // Увеличиваем на 1
-                'action': 'add'
-            },
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    updateCartDisplay(foodId, response.quantity);
-                } else {
-                    alert('Ошибка при изменении количества товара в корзине: ' + response.error);
+            $.ajax({
+                type: 'POST',
+                url: '/modify_cart/',
+                data: {
+                    'food_id': foodId,
+                    'quantity': 1, // Увеличиваем на 1
+                    'action': 'add'
+                },
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        updateCartDisplay(foodId, response.quantity);
+                    } else {
+                        alert('Ошибка при изменении количества товара в корзине: ' + response.error);
+                    }
+                },
+                error: function (xhr, textStatus, error) {
+                    alert('Произошла ошибка при выполнении запроса: ' + error);
+                },
+                complete: function () {
+                    enableButtons([button]);
                 }
-            },
-            error: function (xhr, textStatus, error) {
-                alert('Произошла ошибка при выполнении запроса: ' + error);
-            },
-            complete: function () {
-                enableButtons([button]);
-            }
+            });
         });
     });
-});
 
-reduceQuantityButtons.forEach(button => {
-    button.addEventListener('click', function () {
-        const foodId = parseInt(button.dataset.foodId);
-        const csrfToken = getCookie('csrftoken');
-        disableButtons([button]);
+    reduceQuantityButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const foodId = parseInt(button.dataset.foodId);
+            const csrfToken = getCookie('csrftoken');
+            disableButtons([button]);
 
-        $.ajax({
-            type: 'POST',
-            url: '/modify_cart/',
-            data: {
-                'food_id': foodId,
-                'quantity': 1, // Уменьшаем на 1
-                'action': 'remove'
-            },
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    updateCartDisplay(foodId, response.quantity);
-                } else {
-                    alert('Ошибка при изменении количества товара в корзине: ' + response.error);
+            $.ajax({
+                type: 'POST',
+                url: '/modify_cart/',
+                data: {
+                    'food_id': foodId,
+                    'quantity': 1, // Уменьшаем на 1
+                    'action': 'remove'
+                },
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        updateCartDisplay(foodId, response.quantity);
+                    } else {
+                        alert('Ошибка при изменении количества товара в корзине: ' + response.error);
+                    }
+                },
+                error: function (xhr, textStatus, error) {
+                    alert('Произошла ошибка при выполнении запроса: ' + error);
+                },
+                complete: function () {
+                    enableButtons([button]);
                 }
-            },
-            error: function (xhr, textStatus, error) {
-                alert('Произошла ошибка при выполнении запроса: ' + error);
-            },
-            complete: function () {
-                enableButtons([button]);
-            }
+            });
         });
     });
-});
 
 });
