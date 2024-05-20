@@ -7,44 +7,53 @@
 <section class="block">
     <div class="container">
         {% for food_type, food_name in FOOD_TYPES %}
-            <h1 class="mt-5 mb-4">{{ food_name }}</h1>
-            <div class="row row-cols-1 row-cols-md-4 g-4 overflow-auto" style="flex-wrap: nowrap;">
+        <h1 class="mt-5 mb-4">{{ food_name }}</h1>
+        <div class="scr">
+            <div class="row flex-nowrap overflow-auto">
                 {% for food in foods %}
                     {% if food.category == food_type %}
-                        <div class="col">
-                            <div class="card h-100 shadow-sm">
-                                <img src="{{ food.image }}" alt="{{ food.name }}">
-                                <div class="card-body">
-                                    <h3 class="card-title">{{ food.name }}</h3>
-                                    <h4 class="mb-3">{{ food.price }}T</h4>
-                                    <p>Описание: </p>
-                                    <p>{{ food.description|truncatewords:3 }}</p>
-                                    <div class="card-footer bg-transparent d-grid">
-                                        <button class="btn btn-danger remove-from-cart-btn"
-                                                    data-food-id="{{ food.id }}" style="margin-right: 5px;">Удалить из
-                                                корзины
-                                            </button>
-                                            <button class="btn btn-secondary reduce-quantity-btn"
-                                                    data-food-id="{{ food.id }}" style="margin-right: 5px;">-
-                                            </button>
-                                            <button class="btn btn-primary add-to-cart-btn" data-food-id="{{ food.id }}"
-                                                    data-quantity="1" data-add-to-cart-url="{% url 'modify_cart' %}"
-                                                    style="margin-right: 5px;">Добавить в корзину
-                                            </button>
-                                            <button class="btn btn-secondary increase-quantity-btn"
-                                                    data-food-id="{{ food.id }}" style="margin-left: 5px;">+
-                                            </button>
-                                            <!-- Добавим отображение количества товаров рядом с кнопкой добавления в корзину -->
-                                            <span class="badge bg-secondary ms-2"
-                                                  id="cart-quantity-{{ food.id }}">0</span>
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <img src="{{ food.image }}" alt="{{ food.name }}" class="card-img-top">
+                            <div class="card-body">
+                                <h3 class="card-title">{{ food.name }}</h3>
+                                <h4 class="mb-3">{{ food.price }}T</h4>
+                                <p>Описание: </p>
+                                <p>{{ food.description|truncatewords:3 }}</p>
+                                <div class="card-footer bg-transparent d-grid">
+                                                <button class="btn btn-danger remove-from-cart-btn"
+                                                        data-food-id="{{ food.id }}" style="margin-right: 5px;">Удалить
+                                                    из
+                                                    корзины
+                                                </button>
+                                                <button class="btn btn-secondary reduce-quantity-btn"
+                                                        data-food-id="{{ food.id }}" style="margin-right: 5px;">-
+                                                </button>
+                                                <button class="btn btn-primary add-to-cart-btn"
+                                                        data-food-id="{{ food.id }}"
+                                                        data-quantity="1" data-add-to-cart-url="{% url 'modify_cart' %}"
+                                                        id="cart-quantity-{{ food.id }}"
+                                                        style="margin-right: 5px;">Добавить в корзину
+                                                </button>
+                                                <button class="btn btn-secondary increase-quantity-btn"
+                                                        data-food-id="{{ food.id }}" style="margin-left: 5px;">+
+                                                </button>
+                                                <!-- Добавим отображение количества товаров рядом с кнопкой добавления в корзину -->
+                                                <span class="badge bg-secondary ms-2"
+                                                      id="cart-quantity-{{ food.id }}">0</span>
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    {% endif %}
+                            {% endif %}
+
+                        {% endfor %}
+                    </div>
                 {% endfor %}
+
             </div>
-        {% endfor %}
-    </div>
-</section>
+        </div>
+
+    </section>
 {% endblock %}

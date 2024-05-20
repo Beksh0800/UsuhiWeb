@@ -3,38 +3,38 @@
 {% block title %}Все блюда{% endblock %}
 
 {% block content %}
-    <section class="block">
-        <div class="container pt-5 pb-5">
-            <div class="row">
-                {% for food_type, food_name in FOOD_TYPES %}
-                    <h1 class="mt-5 mb-4">{{ food_name }}</h1>
-                    {% for food in foods %}
-                        {% if food.category == food_type %}
-                            <div class="col-md-3 mb-4">
-                                <div class="card h-100 shadow-sm">
-                                    <img src="{{ food.image }}" alt="">
-                                    <div class="card-body">
-                                        <h3 class="card-title">{{ food.name }}</h3>
-                                        <h4 class="mb-3">{{ food.price }}T </h4>
-                                        <p>Описание:  </p>
-                                        <p>{{ food.description|truncatewords:3 }}</p>
-                                        <div class="mt-3 d-flex justify-content-between align-items-center">
-                                            <div class="btn-group">
-                                                <a class="btn btn-sm btn-outline-secondary"
-                                                   href="{% url 'food_detail_page' pk=food.pk %}">Смотреть</a>
-                                                <a class="btn btn-sm btn-outline-secondary"
-                                                   href="{% url 'edit_food_page' pk=food.pk %}">Изменить</a>
-                                                <a class="btn btn-sm btn-outline-secondary"
-                                                   href="{% url 'delete_food_page' pk=food.pk %}">Удалить</a>
-                                            </div>
-                                        </div>
-                                    </div>
+<section class="block">
+    <div class="container pt-5 pb-5">
+        {% for food_type, food_name in FOOD_TYPES %}
+        <h1 class="mt-5 mb-4">{{ food_name }}</h1>
+        <div class="row flex-nowrap overflow-auto">
+            {% for food in foods %}
+                {% if food.category == food_type %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="{{ food.image }}" alt="{{ food.name }}">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ food.name }}</h3>
+                            <h4 class="mb-3">{{ food.price }}T </h4>
+                            <p>Описание: </p>
+                            <p>{{ food.description|truncatewords:3 }}</p>
+                            <div class="mt-3 d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{% url 'food_detail_page' pk=food.pk %}">Смотреть</a>
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{% url 'edit_food_page' pk=food.pk %}">Изменить</a>
+                                    <a class="btn btn-sm btn-outline-secondary"
+                                       href="{% url 'delete_food_page' pk=food.pk %}">Удалить</a>
                                 </div>
                             </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
-    </section>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}
