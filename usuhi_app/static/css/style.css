@@ -65,3 +65,16 @@ input {
     width: 160px; /* Измените значение на желаемую ширину */
 }
 
+.overflow-auto {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.card {
+    display: inline-block;
+    width: 100%; /* Ограничение ширины каждой карточки */
+}
+
+.row .col {
+    flex: 0 0 auto; /* Важно для поддержки скроллинга без переноса */
+}

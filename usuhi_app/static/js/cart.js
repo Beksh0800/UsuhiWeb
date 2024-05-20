@@ -27,26 +27,41 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue;
     }
 
-    function updateCartDisplay(foodId, quantity) {
+        function updateCartDisplay(foodId, quantity) {
         const cartQuantityElement = document.getElementById(`cart-quantity-${foodId}`);
         const addToCartButton = document.querySelector(`.add-to-cart-btn[data-food-id="${foodId}"]`);
-        const isCartPage = document.body.classList.contains('cart'); // Предполагаем, что у <body> есть класс 'cart-page' на странице корзины
 
         if (cartQuantityElement && addToCartButton) {
             if (quantity > 0) {
-                cartQuantityElement.textContent = quantity;
-                addToCartButton.innerText = `В корзине (${quantity})`;
-            } else if (isCartPage) {
-                // Только на странице корзины удаляем элемент
-                cartQuantityElement.parentElement.parentElement.remove();
+                cartQuantityElement.textContent = `В корзине (${quantity})`;
             } else {
-                // На главной странице просто обновляем текст
-                addToCartButton.innerText = "Добавить в корзину";
+                cartQuantityElement.textContent = "Добавить в корзину";
             }
-        } else {
-            console.error("Elements not found for foodId: " + foodId);
         }
+        checkIfCartIsEmpty();
     }
+
+    function checkIfCartIsEmpty() {
+    const cartItems = document.querySelectorAll('.cart-item');
+    const cartEmptyMessage = document.getElementById('cart-empty-message');
+
+    if (cartEmptyMessage) { // Добавлена проверка на существование элемента
+        if (cartItems.length === 0) {
+            cartEmptyMessage.style.display = 'block';
+        } else {
+            cartEmptyMessage.style.display = 'none';
+        }
+    } else {
+        console.error("Element '#cart-empty-message' not found");
+    }
+}
+
+
+    // Инициализация состояния при загрузке страницы
+    checkIfCartIsEmpty();
+
+
+
 
 
     addToCartButtons.forEach(button => {
