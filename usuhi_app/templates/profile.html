@@ -1,33 +1,20 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный кабинет - JARIQ</title>
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-4">
-        <h2>Личный кабинет</h2>
-        <form>
-            <div class="form-group">
-                <label for="username">Имя пользователя</label>
-                <input type="text" class="form-control" id="username" value="Username">
-            </div>
-            <div class="form-group">
-                <label for="phone">Телефон</label>
-                <input type="text" class="form-control" id="phone" value="777 777 77 77">
-            </div>
-            <div class="form-group">
-                <label for="address">Адрес</label>
-                <input type="text" class="form-control" id="address" value="Некий адрес">
-            </div>
-            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-        </form>
-    </div>
+{% extends 'base_home.html' %}
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <img src="{{ profile.avatar }}" class="img-fluid rounded-circle" alt="Avatar">
+        </div>
+        <div class="col-md-9">
+            <h2>{{ user.username }}</h2>
+            <p><strong>Имя:</strong> {{ user.first_name }}</p>
+            <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+            <p><strong>Электронная почта:</strong> {{ user.email }}</p>
+            <p><strong>Дата регистрации:</strong> {{ user.date_joined }}</p>
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary mt-2">Изменить профиль</a>
+            <a href="{% url 'change_password' %}" class="btn btn-warning mt-2">Изменить пароль</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

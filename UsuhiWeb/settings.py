@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'UsuhiWeb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'Usuhi2',
+        'NAME': 'Usuhi3',
         'HOST': 'localhost',
         'PORT': 27017,
     }

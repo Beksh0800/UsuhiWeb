@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base_home.html' %}
 
-</body>
-</html>
+{% block content %}
+<div class="container mt-4">
+    <h2>Изменить профиль</h2>
+    <form method="post" enctype="multipart/form-data" class="form-horizontal">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Общая информация</legend>
+            {{ user_form.as_p }}
+        </fieldset>
+        <fieldset>
+            <legend>Дополнительная информация</legend>
+            {{ profile_form.as_p }}
+        </fieldset>
+        <a href="{% url 'view_profile' %}" class="btn btn-danger mt-2">Отменить</a>
+        <button type="submit" class="btn btn-primary mt-2">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}

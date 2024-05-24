@@ -1,33 +1,42 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .forms import *
+from .models import Food, Cart, CartItem, Profile,  Order, OrderItem
+from .forms import ProfileForm, UserUpdateForm, OrderCreateForm, CustomPasswordChangeForm, AddFoodForm
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Food, Cart, CartItem, Profile
-from django.contrib.auth.decorators import login_required
-from .forms import ProfileForm
 from django.views.decorators.http import require_POST
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.views.decorators.csrf import csrf_exempt
+import json
 import logging
+
 logger = logging.getLogger(__name__)
-
-# Внутри вашего view
-
-
 
 def food_page(request):
     foods = Food.objects.all()
+    cart_items = {}
 
-    # Получаем корзину текущего пользователя, если он аутентифицирован
     if request.user.is_authenticated:
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        cart_items = cart.items.all()
-    else:
-        cart_items = []
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_items = {item.food.id: item.quantity for item in cart.items.all()}
 
     FOOD_TYPES = Food.FOOD_TYPES
-    context = {'foods': foods, 'FOOD_TYPES': FOOD_TYPES, 'cart_items': cart_items}
-    return render(request, "./foods_page.html", context)
+    context = {
+        'foods': foods,
+        'FOOD_TYPES': FOOD_TYPES,
+        'cart_items': cart_items
+    }
+    return render(request, "foods_page.html", context)
 
 def about_page(request):
     return render(request, 'about_page.html')
@@ -40,7 +49,6 @@ def signup_page(request):
             return redirect("login_page")
     else:
         form = NewsUserForm()
-
     context = {'form': form}
     return render(request, './signup.html', context)
 
@@ -54,44 +62,84 @@ def login_page(request):
             if user is not None:
                 login(request, user)
                 return redirect("food_page")
-
     else:
         form = AuthenticationForm()
-
     context = {'form': form}
     return render(request, './login.html', context)
 
 @login_required
 def view_cart(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_items = cart.items.all()
-    return render(request, 'cart.html', {'cart_items': cart_items})
-
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    cart_items = cart.items.select_related('food')
+    context = {
+        'cart_items': cart_items
+    }
+    return render(request, 'cart.html', context)
 
 @login_required
 def view_profile(request):
     try:
         profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
-        # Если профиль не существует, создаем новый профиль для текущего пользователя
-        profile = Profile.objects.create(user=request.user)  # Предполагается, что Profile имеет поле user
+        profile = Profile.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('view_profile')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileForm(instance=profile)
 
     context = {
-        'profile': profile
+        'profile': profile,
+        'user_form': user_form,
+        'profile_form': profile_form,
     }
     return render(request, 'profile.html', context)
 
+class CustomPasswordChangeView(PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy('view_profile')
+    template_name = 'change_password.html'
+
+    def form_valid(self, form):
+        user = form.save()
+        update_session_auth_hash(self.request, user)
+        return super().form_valid(form)
+
 @login_required
 def edit_profile(request):
-    profile = Profile.objects.get(user=request.user)
+    profile = get_object_or_404(Profile, user=request.user)
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=profile)
+        password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('view_profile')
+
+        if password_form.is_valid():
+            user = password_form.save()
+            update_session_auth_hash(request, user)
             return redirect('view_profile')
     else:
-        form = ProfileForm(instance=profile)
-    return render(request, 'edit_profile.html', {'form': form})
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileForm(instance=profile)
+        password_form = CustomPasswordChangeForm(user=request.user)
+
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'password_form': password_form,
+    }
+    return render(request, 'edit_profile.html', context)
 
 def logout_request(request):
     logout(request)
@@ -105,7 +153,6 @@ def add_food_page(request):
             return redirect('all_food_page')
     else:
         form = AddFoodForm()
-
     context = {'form': form}
     return render(request, './add_food_page.html', context)
 
@@ -123,12 +170,10 @@ def edit_food_page(request, pk):
         if form.is_valid():
             form.save()
             return redirect('food_detail_page', pk=food.pk)
-
     context = {
         'food': food,
         'form': form
     }
-
     return render(request, './edit_food_page.html', context)
 
 def delete_food_page(request, pk):
@@ -136,11 +181,9 @@ def delete_food_page(request, pk):
     if request.method == 'POST':
         food.delete()
         return redirect('all_food_page')
-
     context = {
         'food': food
     }
-
     return render(request, './delete_food_page.html', context)
 
 def all_food_page(request):
@@ -148,7 +191,6 @@ def all_food_page(request):
     FOOD_TYPES = Food.FOOD_TYPES
     context = {'foods': foods, 'FOOD_TYPES': FOOD_TYPES}
     return render(request, 'all_foods.html', context)
-
 
 @login_required
 @require_POST
@@ -162,7 +204,6 @@ def modify_cart(request):
         cart, _ = Cart.objects.get_or_create(user=request.user)
         cart_item, created = CartItem.objects.get_or_create(cart=cart, food=food)
 
-        # Если cart_item только что создан, установите quantity в 0
         if created:
             cart_item.quantity = 0
 
@@ -174,7 +215,6 @@ def modify_cart(request):
                 cart_item.delete()
                 return JsonResponse({'success': True, 'quantity': 0})
 
-        # Убедитесь, что cart_item еще существует перед сохранением
         if cart_item.id:
             cart_item.save()
             return JsonResponse({'success': True, 'quantity': cart_item.quantity})
@@ -183,9 +223,7 @@ def modify_cart(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
-
-from django.shortcuts import get_object_or_404
-
+@login_required
 @require_POST
 def remove_from_cart(request):
     user = request.user
@@ -194,11 +232,12 @@ def remove_from_cart(request):
         return JsonResponse({'error': 'Missing food_id'}, status=400)
 
     try:
-        # Получаем объект корзины текущего пользователя
         cart = get_object_or_404(Cart, user=user)
-        # Прямое удаление товара из корзины
         CartItem.objects.filter(cart=cart, food_id=food_id).delete()
-        return JsonResponse({'success': True})
+
+        cart_items_count = cart.items.count()
+
+        return JsonResponse({'success': True, 'cart_items_count': cart_items_count})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
@@ -213,4 +252,36 @@ def remove_from_cart_view(request):
         except CartItem.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Товар не найден в корзине'})
 
+@csrf_exempt
+def save_order(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        from pymongo import MongoClient
+        client = MongoClient('mongodb://localhost:27017/')
+        db = client.Usuhi2
+        collection = db.orders
+        collection.insert_one(data)
+        return JsonResponse({'status': 'success', 'message': 'Data saved successfully'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
+@login_required
+def order_create(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    if request.method == 'POST':
+        form = OrderCreateForm(request.POST)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.user = request.user
+            order.save()
+            for item in cart_items:
+                OrderItem.objects.create(order=order, product=item.food, price=item.food.price, quantity=item.quantity)
+            cart_items.delete()
+            return redirect('order_success', order_id=order.id)
+    else:
+        form = OrderCreateForm()
+    return render(request, 'shop/order_create.html', {'cart_items': cart_items, 'form': form})
+
+@login_required
+def order_success(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'shop/order_success.html', {'order': order})

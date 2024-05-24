@@ -1,10 +1,11 @@
 {% extends 'base_home.html' %}
 {% load static %}
+{% load cart_extras %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Главная страница{% endblock %}
 
 {% block content %}
-<section class="block">
+<section>
     <div class="container">
         {% for food_type, food_name in FOOD_TYPES %}
         <h1 class="mt-5 mb-4">{{ food_name }}</h1>
@@ -18,42 +19,39 @@
                             <div class="card-body">
                                 <h3 class="card-title">{{ food.name }}</h3>
                                 <h4 class="mb-3">{{ food.price }}T</h4>
-                                <p>Описание: </p>
+                                <p>Описание:</p>
                                 <p>{{ food.description|truncatewords:3 }}</p>
                                 <div class="card-footer bg-transparent d-grid">
-                                                <button class="btn btn-danger remove-from-cart-btn"
-                                                        data-food-id="{{ food.id }}" style="margin-right: 5px;">Удалить
-                                                    из
-                                                    корзины
-                                                </button>
-                                                <button class="btn btn-secondary reduce-quantity-btn"
-                                                        data-food-id="{{ food.id }}" style="margin-right: 5px;">-
-                                                </button>
-                                                <button class="btn btn-primary add-to-cart-btn"
-                                                        data-food-id="{{ food.id }}"
-                                                        data-quantity="1" data-add-to-cart-url="{% url 'modify_cart' %}"
-                                                        id="cart-quantity-{{ food.id }}"
-                                                        style="margin-right: 5px;">Добавить в корзину
-                                                </button>
-                                                <button class="btn btn-secondary increase-quantity-btn"
-                                                        data-food-id="{{ food.id }}" style="margin-left: 5px;">+
-                                                </button>
-                                                <!-- Добавим отображение количества товаров рядом с кнопкой добавления в корзину -->
-                                                <span class="badge bg-secondary ms-2"
-                                                      id="cart-quantity-{{ food.id }}">0</span>
-
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <button class="btn btn-danger remove-from-cart-btn"
+                                            data-food-id="{{ food.id }}" style="margin-right: 5px;">Удалить из корзины
+                                    </button>
+                                    <button class="btn btn-secondary reduce-quantity-btn"
+                                            data-food-id="{{ food.id }}" style="margin-right: 5px;">-
+                                    </button>
+                                    <button class="btn btn-primary add-to-cart-btn"
+                                            data-food-id="{{ food.id }}"
+                                            data-quantity="1" data-add-to-cart-url="{% url 'modify_cart' %}"
+                                            id="cart-quantity-{{ food.id }}"
+                                            data-initial-quantity="{{ cart_items|get_item:food.id }}"
+                                            style="margin-right: 5px;">
+                                        {% if food.id in cart_items %}
+                                            В корзине ({{ cart_items|get_item:food.id }})
+                                        {% else %}
+                                            Добавить в корзину
+                                        {% endif %}
+                                    </button>
+                                    <button class="btn btn-secondary increase-quantity-btn"
+                                            data-food-id="{{ food.id }}" style="margin-left: 5px;">+
+                                    </button>
                                 </div>
-                            {% endif %}
-
-                        {% endfor %}
+                            </div>
+                        </div>
                     </div>
+                    {% endif %}
                 {% endfor %}
-
             </div>
         </div>
-
-    </section>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}

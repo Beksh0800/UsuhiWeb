@@ -27,42 +27,39 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue;
     }
 
-        function updateCartDisplay(foodId, quantity) {
+    function updateCartDisplay(foodId, quantity) {
         const cartQuantityElement = document.getElementById(`cart-quantity-${foodId}`);
         const addToCartButton = document.querySelector(`.add-to-cart-btn[data-food-id="${foodId}"]`);
 
         if (cartQuantityElement && addToCartButton) {
             if (quantity > 0) {
                 cartQuantityElement.textContent = `В корзине (${quantity})`;
+                cartQuantityElement.classList.add('btn-success');
+                cartQuantityElement.classList.remove('btn-primary');
             } else {
                 cartQuantityElement.textContent = "Добавить в корзину";
+                cartQuantityElement.classList.add('btn-primary');
+                cartQuantityElement.classList.remove('btn-success');
             }
         }
         checkIfCartIsEmpty();
     }
 
     function checkIfCartIsEmpty() {
-    const cartItems = document.querySelectorAll('.cart-item');
-    const cartEmptyMessage = document.getElementById('cart-empty-message');
+        const cartItems = document.querySelectorAll('.cart-item');
+        const cartEmptyMessage = document.getElementById('cart-empty-message');
 
-    if (cartEmptyMessage) { // Добавлена проверка на существование элемента
-        if (cartItems.length === 0) {
-            cartEmptyMessage.style.display = 'block';
-        } else {
-            cartEmptyMessage.style.display = 'none';
+        if (cartEmptyMessage) {
+            if (cartItems.length === 0) {
+                cartEmptyMessage.style.display = 'block';
+            } else {
+                cartEmptyMessage.style.display = 'none';
+            }
         }
-    } else {
-        console.error("Element '#cart-empty-message' not found");
     }
-}
-
 
     // Инициализация состояния при загрузке страницы
     checkIfCartIsEmpty();
-
-
-
-
 
     addToCartButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -131,6 +128,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 success: function (response) {
                     if (response.success) {
                         updateCartDisplay(foodId, 0);
+                        document.getElementById(`cart-item-${foodId}`).remove();
+                        checkIfCartIsEmpty();
                     } else {
                         alert('Ошибка при удалении товара из корзины: ' + response.error);
                     }
@@ -156,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 url: '/modify_cart/',
                 data: {
                     'food_id': foodId,
-                    'quantity': 1, // Увеличиваем на 1
+                    'quantity': 1,
                     'action': 'add'
                 },
                 headers: {
@@ -191,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 url: '/modify_cart/',
                 data: {
                     'food_id': foodId,
-                    'quantity': 1, // Уменьшаем на 1
+                    'quantity': 1,
                     'action': 'remove'
                 },
                 headers: {
@@ -200,7 +199,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 dataType: 'json',
                 success: function (response) {
                     if (response.success) {
-                        updateCartDisplay(foodId, response.quantity);
+                        if (response.quantity > 0) {
+                            updateCartDisplay(foodId, response.quantity);
+                        } else {
+                            document.getElementById(`cart-item-${foodId}`).remove();
+                            checkIfCartIsEmpty();
+                        }
                     } else {
                         alert('Ошибка при изменении количества товара в корзине: ' + response.error);
                     }
@@ -215,4 +219,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // Инициализация состояния кнопок при загрузке страницы
+    addToCartButtons.forEach(button => {
+        const foodId = parseInt(button.dataset.foodId);
+        const initialQuantity = parseInt(button.getAttribute('data-initial-quantity')) || 0;
+        updateCartDisplay(foodId, initialQuantity);
+    });
 });

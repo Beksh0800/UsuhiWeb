@@ -86,4 +86,7 @@ input {
     height: 200px;
     object-fit: cover;
 }
-
+.scr {
+    overflow-x: auto;
+    white-space: nowrap;
+}
