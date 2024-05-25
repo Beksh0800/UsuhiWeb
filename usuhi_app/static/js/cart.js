@@ -29,20 +29,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateCartDisplay(foodId, quantity) {
         const cartQuantityElement = document.getElementById(`cart-quantity-${foodId}`);
-        const addToCartButton = document.querySelector(`.add-to-cart-btn[data-food-id="${foodId}"]`);
 
-        if (cartQuantityElement && addToCartButton) {
+        if (cartQuantityElement) {
             if (quantity > 0) {
                 cartQuantityElement.textContent = `В корзине (${quantity})`;
                 cartQuantityElement.classList.add('btn-success');
                 cartQuantityElement.classList.remove('btn-primary');
-            } else {
+            } else if (quantity === 0) {
                 cartQuantityElement.textContent = "Добавить в корзину";
                 cartQuantityElement.classList.add('btn-primary');
                 cartQuantityElement.classList.remove('btn-success');
             }
         }
-        checkIfCartIsEmpty();
     }
 
     function checkIfCartIsEmpty() {
@@ -62,9 +60,12 @@ document.addEventListener("DOMContentLoaded", function () {
     checkIfCartIsEmpty();
 
     addToCartButtons.forEach(button => {
+        const foodId = parseInt(button.dataset.foodId);
+        const initialQuantity = parseInt(button.getAttribute('data-quantity')) || 0;
+        updateCartDisplay(foodId, initialQuantity);
+
         button.addEventListener('click', function () {
             const foodId = parseInt(button.dataset.foodId);
-            const quantity = parseInt(button.dataset.quantity) || 0;
 
             if (isNaN(foodId)) {
                 alert('Ошибка: food_id должен быть числом!');
@@ -128,7 +129,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 success: function (response) {
                     if (response.success) {
                         updateCartDisplay(foodId, 0);
-                        document.getElementById(`cart-item-${foodId}`).remove();
+                        const cartItemElement = document.getElementById(`cart-item-${foodId}`);
+                        if (cartItemElement) {
+                            cartItemElement.remove();
+                        }
                         checkIfCartIsEmpty();
                     } else {
                         alert('Ошибка при удалении товара из корзины: ' + response.error);
@@ -202,7 +206,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (response.quantity > 0) {
                             updateCartDisplay(foodId, response.quantity);
                         } else {
-                            document.getElementById(`cart-item-${foodId}`).remove();
+                            const cartItemElement = document.getElementById(`cart-item-${foodId}`);
+                            if (cartItemElement) {
+                                cartItemElement.remove();
+                            }
+                            updateCartDisplay(foodId, response.quantity);
                             checkIfCartIsEmpty();
                         }
                     } else {
@@ -222,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Инициализация состояния кнопок при загрузке страницы
     addToCartButtons.forEach(button => {
         const foodId = parseInt(button.dataset.foodId);
-        const initialQuantity = parseInt(button.getAttribute('data-initial-quantity')) || 0;
+        const initialQuantity = parseInt(button.getAttribute('data-quantity')) || 0;
         updateCartDisplay(foodId, initialQuantity);
     });
 });

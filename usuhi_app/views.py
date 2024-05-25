@@ -69,12 +69,19 @@ def login_page(request):
 
 @login_required
 def view_cart(request):
+    foods = Food.objects.all()
     cart, _ = Cart.objects.get_or_create(user=request.user)
-    cart_items = cart.items.select_related('food')
+    cart_items = {item.food.id: item.quantity for item in cart.items.all()}
+
+    FOOD_TYPES = Food.FOOD_TYPES
     context = {
+        'foods': foods,
+        'FOOD_TYPES': FOOD_TYPES,
         'cart_items': cart_items
     }
-    return render(request, 'cart.html', context)
+    return render(request, "cart.html", context)
+
+
 
 @login_required
 def view_profile(request):

@@ -30,9 +30,8 @@
                                     </button>
                                     <button class="btn btn-primary add-to-cart-btn"
                                             data-food-id="{{ food.id }}"
-                                            data-quantity="1" data-add-to-cart-url="{% url 'modify_cart' %}"
+                                            data-quantity="{{ cart_items|get_item:food.id }}" data-add-to-cart-url="{% url 'modify_cart' %}"
                                             id="cart-quantity-{{ food.id }}"
-                                            data-initial-quantity="{{ cart_items|get_item:food.id }}"
                                             style="margin-right: 5px;">
                                         {% if food.id in cart_items %}
                                             В корзине ({{ cart_items|get_item:food.id }})
