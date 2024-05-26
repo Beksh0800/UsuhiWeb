@@ -4,53 +4,198 @@
 
 {% block title %}Главная страница{% endblock %}
 
+{% block style %}
+<style>
+    .hero {
+        background-image: url('https://image.starterapp.co/w:1920/aHR0cHM6Ly9jZG4uc2FuaXR5LmlvL2ltYWdlcy90YW00OHQ0by9wcm9kdWN0aW9uL2IwNjg0NzQ5M2UzNDc2MGRhZjk2MGRjZjk1M2Q0MzFkOWQ3Y2Y5ODEtMzIwMHgxMDUyLnBuZw==');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        background-repeat: no-repeat;
+        padding: 20px;
+        width: 100%;
+        height: 400px;
+    }
+    .hero h1 {
+        font-size: 4rem;
+        font-weight: bold;
+    }
+    .hero p {
+        font-size: 1.5rem;
+    }
+    .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+    .card-body {
+        flex-grow: 1;
+    }
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    .card-footer .btn {
+        flex: 1 1 22%;
+        margin-bottom: 5px;
+    }
+    .card img {
+        height: 200px;
+        object-fit: cover;
+    }
+    @media (max-width: 576px) {
+        .card-footer .btn {
+            flex: 1 1 45%;
+        }
+    }
+    .scr {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .scr .row {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        width: 100%;
+    }
+    .scr .row::-webkit-scrollbar {
+        display: none;
+    }
+    .scroll-buttons {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .scroll-button {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 10;
+    }
+    .scroll-button.prev {
+        position: absolute;
+        left: -50px;
+    }
+    .scroll-button.next {
+        position: absolute;
+        right: -50px;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+{% endblock %}
+
 {% block content %}
+<div class="hero"></div>
 <section>
     <div class="container">
         {% for food_type, food_name in FOOD_TYPES %}
         <h1 class="mt-5 mb-4">{{ food_name }}</h1>
-        <div class="scr">
-            <div class="row flex-nowrap overflow-auto">
+        <div class="scr" id="scr-{{ food_type }}">
+            <button class="scroll-button prev" data-target="#scr-{{ food_type }}"><i class="bi bi-chevron-left"></i></button>
+            <div class="row flex-nowrap">
                 {% for food in foods %}
                     {% if food.category == food_type %}
-                    <div class="col-md-3 mb-4">
+                    <div class="col-md-3 col-sm-6 mb-4">
                         <div class="card h-100 shadow-sm">
                             <img src="{{ food.image }}" alt="{{ food.name }}" class="card-img-top">
                             <div class="card-body">
                                 <h3 class="card-title">{{ food.name }}</h3>
-                                <h4 class="mb-3">{{ food.price }}T</h4>
+                                <h4 class="mb-3">{{ food.price }}₸</h4>
                                 <p>Описание:</p>
                                 <p>{{ food.description|truncatewords:3 }}</p>
-                                <div class="card-footer bg-transparent d-grid">
-                                    <button class="btn btn-danger remove-from-cart-btn"
-                                            data-food-id="{{ food.id }}" style="margin-right: 5px;">Удалить из корзины
-                                    </button>
-                                    <button class="btn btn-secondary reduce-quantity-btn"
-                                            data-food-id="{{ food.id }}" style="margin-right: 5px;">-
-                                    </button>
-                                    <button class="btn btn-primary add-to-cart-btn"
-                                            data-food-id="{{ food.id }}"
-                                            data-quantity="{{ cart_items|get_item:food.id }}" data-add-to-cart-url="{% url 'modify_cart' %}"
-                                            id="cart-quantity-{{ food.id }}"
-                                            style="margin-right: 5px;">
-                                        {% if food.id in cart_items %}
-                                            В корзине ({{ cart_items|get_item:food.id }})
-                                        {% else %}
-                                            Добавить в корзину
-                                        {% endif %}
-                                    </button>
-                                    <button class="btn btn-secondary increase-quantity-btn"
-                                            data-food-id="{{ food.id }}" style="margin-left: 5px;">+
-                                    </button>
-                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-danger remove-from-cart-btn" data-food-id="{{ food.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <button class="btn btn-secondary reduce-quantity-btn" data-food-id="{{ food.id }}">
+                                    <i class="bi bi-dash-circle"></i>
+                                </button>
+                                <button class="btn btn-primary add-to-cart-btn" data-food-id="{{ food.id }}"
+                                        data-quantity="{{ cart_items|get_item:food.id }}" data-add-to-cart-url="{% url 'modify_cart' %}"
+                                        id="cart-quantity-{{ food.id }}">
+                                    {% if food.id in cart_items %}
+                                        {{ cart_items|get_item:food.id }}
+                                    {% else %}
+                                        <i class="bi bi-cart"></i>
+                                    {% endif %}
+                                </button>
+                                <button class="btn btn-secondary increase-quantity-btn" data-food-id="{{ food.id }}">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                     {% endif %}
                 {% endfor %}
             </div>
+            <button class="scroll-button next" data-target="#scr-{{ food_type }}"><i class="bi bi-chevron-right"></i></button>
         </div>
         {% endfor %}
     </div>
 </section>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const scrollButtons = document.querySelectorAll('.scroll-button');
+
+        scrollButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const targetId = button.getAttribute('data-target');
+                const row = document.querySelector(`${targetId} .row`);
+                if (!row) {
+                    console.error('Row not found for scrolling');
+                    return;
+                }
+                const direction = button.classList.contains('prev') ? -1 : 1;
+                const scrollAmount = row.clientWidth * 0.8; // Scroll by 80% of the visible area
+                row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            });
+        });
+
+        const rowElements = document.querySelectorAll('.scr .row');
+
+        rowElements.forEach(row => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            row.addEventListener('mousedown', (e) => {
+                isDown = true;
+                row.classList.add('active');
+                startX = e.pageX - row.offsetLeft;
+                scrollLeft = row.scrollLeft;
+            });
+
+            row.addEventListener('mouseleave', () => {
+                isDown = false;
+                row.classList.remove('active');
+            });
+
+            row.addEventListener('mouseup', () => {
+                isDown = false;
+                row.classList.remove('active');
+            });
+
+            row.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - row.offsetLeft;
+                const walk = (x - startX) * 2; //scroll-fast
+                row.scrollLeft = scrollLeft - walk;
+            });
+        });
+    });
+</script>
 {% endblock %}

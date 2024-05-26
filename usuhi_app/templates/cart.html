@@ -4,6 +4,36 @@
 
 {% block title %}Корзина{% endblock %}
 
+{% block style %}
+<style>
+    .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+    .card-body {
+        flex-grow: 1;
+    }
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+    .card-footer .btn {
+        flex: 1 1 45%;
+        margin-bottom: 5px;
+    }
+    @media (max-width: 576px) {
+        .card-footer .btn {
+            flex: 1 1 100%;
+        }
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+{% endblock %}
+
 {% block content %}
 <section>
     <div class="container mt-3">
@@ -19,26 +49,23 @@
                         <img src="{{ food.image }}" alt="{{ food.name }}" class="card-img-top">
                         <div class="card-body">
                             <h3 class="card-title">{{ food.name }}</h3>
-                            <h4 class="mb-3">{{ food.price }}T</h4>
+                            <h4 class="mb-3">{{ food.price }}₸</h4>
                             <p>Описание:</p>
                             <p>{{ food.description|truncatewords:10 }}</p>
-                            <div class="card-footer bg-transparent d-grid">
-                                <button class="btn btn-danger remove-from-cart-btn"
-                                        data-food-id="{{ food.id }}" style="margin-right: 5px;">Удалить из корзины
-                                </button>
-                                <button class="btn btn-secondary reduce-quantity-btn"
-                                        data-food-id="{{ food.id }}" style="margin-right: 5px;">-
-                                </button>
-                                <button class="btn btn-primary add-to-cart-btn"
-                                        data-food-id="{{ food.id }}"
-                                        data-quantity="{{ cart_items|get_item:food.id }}" data-add-to-cart-url="{% url 'modify_cart' %}"
-                                        id="cart-quantity-{{ food.id }}" style="margin-right: 5px;">
-                                    В корзине ({{ cart_items|get_item:food.id }})
-                                </button>
-                                <button class="btn btn-secondary increase-quantity-btn"
-                                        data-food-id="{{ food.id }}" style="margin-left: 5px;">+
-                                </button>
-                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <button class="btn btn-danger remove-from-cart-btn" data-food-id="{{ food.id }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <button class="btn btn-secondary reduce-quantity-btn" data-food-id="{{ food.id }}">
+                                <i class="bi bi-dash-circle"></i>
+                            </button>
+                            <button class="btn btn-primary add-to-cart-btn" data-food-id="{{ food.id }}" data-quantity="{{ cart_items|get_item:food.id }}" data-add-to-cart-url="{% url 'modify_cart' %}" id="cart-quantity-{{ food.id }}">
+                                {{ cart_items|get_item:food.id }}
+                            </button>
+                            <button class="btn btn-secondary increase-quantity-btn" data-food-id="{{ food.id }}">
+                                <i class="bi bi-plus-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

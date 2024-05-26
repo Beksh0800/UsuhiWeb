@@ -1,92 +1,62 @@
-.bag {
-    background-image: url('https://image.starterapp.co/w:1920/aHR0cHM6Ly9jZG4uc2FuaXR5LmlvL2ltYWdlcy90YW00OHQ0by9wcm9kdWN0aW9uL2IwNjg0NzQ5M2UzNDc2MGRhZjk2MGRjZjk1M2Q0MzFkOWQ3Y2Y5ODEtMzIwMHgxMDUyLnBuZw==');
-    background-repeat: no-repeat;
-    background-size: cover;
-    padding: 20px;
-    width: 100%;
-    height: 500px;
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
 }
 
 .navbar {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: white;
-    height: auto;
-    width: auto;
-    display: flex;
+    background-color: #343a40;
 }
 
-.navbar-expanded {
-    height: auto;
-    width: auto;
-    display: flex;
+.navbar-brand {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
-.nav-item {
-    margin-right: 10px; /* Одинаковый отступ между элементами */
-    margin-bottom: 5px; /* Небольшой отступ между элементами */
+.navbar-nav .nav-link {
+    color: #ffffff;
 }
 
-.nav-item a {
-    margin-bottom: 0; /* Удаление отступа снизу у ссылок */
+.navbar-nav .nav-link:hover {
+    color: #d3d3d3;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.card {
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-footer {
+    background-color: transparent;
+    border-top: none;
 }
 
 footer {
     background-color: #343a40;
-    color: #fff;
-    text-align: center;
+    color: #ffffff;
     padding: 20px 0;
-    margin-top: 50px;
+    text-align: center;
 }
 
-footer p {
+.footer-text {
     margin: 0;
-}
-
-label {
-    display: block;
-    margin-bottom: 10px;
-}
-
-input {
-    width: 50%;
-    display: block;
-    padding: 20px;
-    border-radius: 15px;
-    border: 1px solid #1f2229;
-    margin-bottom: 20px;
-}
-
-.title {
-    margin-left: 25px;
-    margin-top: 25px;
-}
-
-.len {
-    width: 160px; /* Измените значение на желаемую ширину */
-}
-
-.overflow-auto {
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-.scr .row {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-}
-
-.col-md-3 {
-    flex: 0 0 auto;
-    min-width: 25%;
-}
-
-.card img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-}
-.scr {
-    overflow-x: auto;
-    white-space: nowrap;
 }

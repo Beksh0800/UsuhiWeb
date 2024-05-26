@@ -32,11 +32,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (cartQuantityElement) {
             if (quantity > 0) {
-                cartQuantityElement.textContent = `В корзине (${quantity})`;
+                cartQuantityElement.innerHTML = `${quantity}`;
                 cartQuantityElement.classList.add('btn-success');
                 cartQuantityElement.classList.remove('btn-primary');
             } else if (quantity === 0) {
-                cartQuantityElement.textContent = "Добавить в корзину";
+                cartQuantityElement.innerHTML = `<i class="bi bi-cart"></i>`;
                 cartQuantityElement.classList.add('btn-primary');
                 cartQuantityElement.classList.remove('btn-success');
             }
