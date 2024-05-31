@@ -23,10 +23,20 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
 
+
 class OrderCreateForm(forms.ModelForm):
+    PAYMENT_CHOICES = [
+        ('cash', 'Наличные'),
+        ('card', 'Карта'),
+        ('online', 'Онлайн оплата'),
+    ]
+
+    payment_method = forms.ChoiceField(choices=PAYMENT_CHOICES, widget=forms.RadioSelect, label='Способ оплаты')
+
     class Meta:
         model = Order
-        fields = ['first_name', 'last_name', 'email', 'address', 'city', 'postal_code']
+        fields = ['first_name', 'last_name', 'email', 'address', 'city', 'postal_code', 'country', 'payment_method']
+
 
 class CustomPasswordChangeForm(SetPasswordForm):
     class Meta:

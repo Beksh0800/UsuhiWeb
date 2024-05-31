@@ -1,4 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
+    console.log('Cart script loaded');
+
+    function saveCartToLocalStorage() {
+        let cartItems = [];
+        document.querySelectorAll('.cart-item').forEach(item => {
+            let nameElement = item.querySelector('.card-title').textContent.trim();
+            let priceElement = item.querySelector('.card-body h4').textContent.trim();
+            let quantityElement = item.querySelector('.quantity').textContent.trim();
+            cartItems.push({name: nameElement, price: priceElement, quantity: quantityElement});
+        });
+        localStorage.setItem('cart_items', JSON.stringify(cartItems));
+        let totalPrice = document.getElementById('total-price').textContent.trim();
+        localStorage.setItem('total_price', totalPrice);
+    }
+
     const reduceQuantityButtons = document.querySelectorAll('.reduce-quantity-btn');
     const increaseQuantityButtons = document.querySelectorAll('.increase-quantity-btn');
     const removeFromCartButtons = document.querySelectorAll('.remove-from-cart-btn');
@@ -35,11 +50,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 cartQuantityElement.innerHTML = `${quantity}`;
                 cartQuantityElement.classList.add('btn-success');
                 cartQuantityElement.classList.remove('btn-primary');
-            } else if (quantity === 0) {
+            } else {
                 cartQuantityElement.innerHTML = `<i class="bi bi-cart"></i>`;
                 cartQuantityElement.classList.add('btn-primary');
                 cartQuantityElement.classList.remove('btn-success');
             }
+        }
+    }
+
+    function updateTotalDisplay(total) {
+        const totalElement = document.getElementById('total-price');
+        if (totalElement) {
+            totalElement.innerHTML = `${total}₸`;
+            saveCartToLocalStorage();
         }
     }
 
@@ -56,153 +79,74 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Инициализация состояния при загрузке страницы
-    checkIfCartIsEmpty();
+    function updateTotalPrice() {
+        $.ajax({
+            type: 'GET',
+            url: '/cart/total/',
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    updateTotalDisplay(response.total_price);
+                } else {
+                    alert('Ошибка при обновлении общей суммы: ' + response.error);
+                }
+            },
+            error: function (xhr, textStatus, error) {
+                alert('Произошла ошибка при обновлении общей суммы: ' + error);
+            }
+        });
+    }
 
-    addToCartButtons.forEach(button => {
+    function handleButtonClick(button, action) {
         const foodId = parseInt(button.dataset.foodId);
-        const initialQuantity = parseInt(button.getAttribute('data-quantity')) || 0;
-        updateCartDisplay(foodId, initialQuantity);
+        if (isNaN(foodId)) {
+            alert('Ошибка: food_id должен быть числом!');
+            return;
+        }
 
-        button.addEventListener('click', function () {
-            const foodId = parseInt(button.dataset.foodId);
+        const csrfToken = getCookie('csrftoken');
+        disableButtons([button]);
 
-            if (isNaN(foodId)) {
-                alert('Ошибка: food_id должен быть числом!');
-                return;
-            }
+        let url, data;
+        if (action === 'add') {
+            url = button.dataset.addToCartUrl;
+            data = {
+                'food_id': foodId,
+                'quantity': 1,
+                'action': 'add'
+            };
+        } else if (action === 'remove') {
+            url = '/remove_from_cart/';
+            data = {
+                'food_id': foodId
+            };
+        } else if (action === 'increase') {
+            url = '/modify_cart/';
+            data = {
+                'food_id': foodId,
+                'quantity': 1,
+                'action': 'add'
+            };
+        } else if (action === 'reduce') {
+            url = '/modify_cart/';
+            data = {
+                'food_id': foodId,
+                'quantity': 1,
+                'action': 'remove'
+            };
+        }
 
-            const csrfToken = getCookie('csrftoken');
-            disableButtons([button]);
-
-            $.ajax({
-                type: 'POST',
-                url: button.dataset.addToCartUrl,
-                data: {
-                    'food_id': foodId,
-                    'quantity': 1,
-                    'action': 'add'
-                },
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        updateCartDisplay(foodId, response.quantity);
-                    } else {
-                        alert('Ошибка при добавлении товара в корзину: ' + response.error);
-                    }
-                },
-                error: function (xhr, textStatus, error) {
-                    alert('Произошла ошибка при выполнении запроса: ' + error);
-                },
-                complete: function () {
-                    enableButtons([button]);
-                }
-            });
-        });
-    });
-
-    removeFromCartButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const foodId = parseInt(button.dataset.foodId);
-
-            if (isNaN(foodId)) {
-                alert('Ошибка: food_id должен быть числом!');
-                return;
-            }
-
-            const csrfToken = getCookie('csrftoken');
-            disableButtons([button]);
-
-            $.ajax({
-                type: 'POST',
-                url: '/remove_from_cart/',
-                data: {
-                    'food_id': foodId
-                },
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        updateCartDisplay(foodId, 0);
-                        const cartItemElement = document.getElementById(`cart-item-${foodId}`);
-                        if (cartItemElement) {
-                            cartItemElement.remove();
-                        }
-                        checkIfCartIsEmpty();
-                    } else {
-                        alert('Ошибка при удалении товара из корзины: ' + response.error);
-                    }
-                },
-                error: function (xhr, textStatus, error) {
-                    alert('Произошла ошибка при выполнении запроса: ' + error);
-                },
-                complete: function () {
-                    enableButtons([button]);
-                }
-            });
-        });
-    });
-
-    increaseQuantityButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const foodId = parseInt(button.dataset.foodId);
-            const csrfToken = getCookie('csrftoken');
-            disableButtons([button]);
-
-            $.ajax({
-                type: 'POST',
-                url: '/modify_cart/',
-                data: {
-                    'food_id': foodId,
-                    'quantity': 1,
-                    'action': 'add'
-                },
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        updateCartDisplay(foodId, response.quantity);
-                    } else {
-                        alert('Ошибка при изменении количества товара в корзине: ' + response.error);
-                    }
-                },
-                error: function (xhr, textStatus, error) {
-                    alert('Произошла ошибка при выполнении запроса: ' + error);
-                },
-                complete: function () {
-                    enableButtons([button]);
-                }
-            });
-        });
-    });
-
-    reduceQuantityButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const foodId = parseInt(button.dataset.foodId);
-            const csrfToken = getCookie('csrftoken');
-            disableButtons([button]);
-
-            $.ajax({
-                type: 'POST',
-                url: '/modify_cart/',
-                data: {
-                    'food_id': foodId,
-                    'quantity': 1,
-                    'action': 'remove'
-                },
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    if (action === 'remove' || action === 'reduce') {
                         if (response.quantity > 0) {
                             updateCartDisplay(foodId, response.quantity);
                         } else {
@@ -214,23 +158,53 @@ document.addEventListener("DOMContentLoaded", function () {
                             checkIfCartIsEmpty();
                         }
                     } else {
-                        alert('Ошибка при изменении количества товара в корзине: ' + response.error);
+                        updateCartDisplay(foodId, response.quantity);
                     }
-                },
-                error: function (xhr, textStatus, error) {
-                    alert('Произошла ошибка при выполнении запроса: ' + error);
-                },
-                complete: function () {
-                    enableButtons([button]);
+                    updateTotalPrice();  // Обновление общей суммы
+                } else {
+                    alert('Ошибка при выполнении действия: ' + response.error);
                 }
-            });
+            },
+            error: function (xhr, textStatus, error) {
+                alert('Произошла ошибка при выполнении запроса: ' + error);
+            },
+            complete: function () {
+                enableButtons([button]);
+            }
         });
-    });
+    }
 
-    // Инициализация состояния кнопок при загрузке страницы
     addToCartButtons.forEach(button => {
         const foodId = parseInt(button.dataset.foodId);
         const initialQuantity = parseInt(button.getAttribute('data-quantity')) || 0;
         updateCartDisplay(foodId, initialQuantity);
+
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'add');
+        });
     });
+
+    removeFromCartButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'remove');
+            updateCartDisplay();
+        });
+    });
+
+    increaseQuantityButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'increase');
+        });
+    });
+
+    reduceQuantityButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'reduce');
+        });
+    });
+
+    // Инициализация состояния при загрузке страницы
+    checkIfCartIsEmpty();
+    updateTotalPrice();
+    updateCartDisplay();
 });

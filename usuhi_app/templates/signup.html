@@ -1,4 +1,4 @@
-{% extends './base_login.html' %}
+{% extends 'base_home.html' %}
 {% load crispy_forms_tags %}
 {% block title %}Регистрация{% endblock %}
 {% block content %}
@@ -8,7 +8,7 @@
 
     <form method="post">
         {% csrf_token %}
-        {{ form }}
+                {{ form|crispy }}
         <button class="btn btn-primary md-3">Войти</button>
         <p>Если у вас есть аккаунт, пройдите <a href="{% url 'login_page' %}"> авторизацию</a></p>
     </form>

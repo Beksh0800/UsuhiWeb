@@ -1,20 +1,26 @@
 {% extends 'base_home.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Изменить профиль{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Изменить профиль</h2>
+    <h2 class="mb-4">Изменить профиль</h2>
     <form method="post" enctype="multipart/form-data" class="form-horizontal">
         {% csrf_token %}
-        <fieldset>
-            <legend>Общая информация</legend>
-            {{ user_form.as_p }}
+
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-2">Общая информация</legend>
+            {{ user_form|crispy }}
         </fieldset>
-        <fieldset>
-            <legend>Дополнительная информация</legend>
-            {{ profile_form.as_p }}
+        <fieldset class="border p-4 mb-4">
+            <legend class="w-auto px-2">Дополнительная информация</legend>
+            {{ profile_form|crispy }}
         </fieldset>
-        <a href="{% url 'view_profile' %}" class="btn btn-danger mt-2">Отменить</a>
-        <button type="submit" class="btn btn-primary mt-2">Сохранить изменения</button>
+        <div class="d-flex justify-content-start">
+            <a href="{% url 'view_profile' %}" class="btn btn-danger me-2">Отменить</a>
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </div>
     </form>
 </div>
 {% endblock %}

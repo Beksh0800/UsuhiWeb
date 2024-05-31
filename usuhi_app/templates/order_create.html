@@ -1,0 +1,138 @@
+{% extends 'base_home.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+
+{% block title %}Оформление заказа{% endblock %}
+
+{% block style %}
+<style>
+    .order-form {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-form h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .order-form .form-group label {
+        font-weight: bold;
+    }
+
+    .order-form .form-control {
+        margin-bottom: 10px;
+    }
+
+    .order-form .btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .order-form .btn:hover {
+        background-color: #45a049;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section>
+    <div class="container mt-3">
+        <div class="order-form">
+            <h2 class="text-center mb-4">Оформление заказа</h2>
+            <form id="order-form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_first_name">Имя</label>
+                    {{ form.first_name|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                    <label for="id_last_name">Фамилия</label>
+                    {{ form.last_name|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                    <label for="id_email">Email</label>
+                    {{ form.email|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                    <label for="id_address">Адрес</label>
+                    {{ form.address|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                    <label for="id_city">Город</label>
+                    {{ form.city|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                    <label for="id_postal_code">Почтовый индекс</label>
+                    {{ form.postal_code|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                    <label for="id_country">Страна</label>
+                    {{ form.country|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                    <label for="id_payment_method">Способ оплаты</label>
+                    {{ form.payment_method|as_crispy_field }}
+                </div>
+                <button type="submit" class="btn btn-success">Подтвердить заказ</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('order-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+        let orderData = {
+            first_name: formData.get('first_name'),
+            last_name: formData.get('last_name'),
+            email: formData.get('email'),
+            address: formData.get('address'),
+            city: formData.get('city'),
+            postal_code: formData.get('postal_code'),
+            country: formData.get('country'),
+            payment_method: formData.get('payment_method')
+        };
+
+        let cartItems = JSON.parse(localStorage.getItem('cart_items')) || [];
+        let cartMessage = 'Корзина:\n';
+        cartItems.forEach(item => {
+            cartMessage += `${item.name} - ${item.price} - ${item.quantity} шт.\n`;
+        });
+
+        let totalPrice = localStorage.getItem('total_price') || '0₸';
+        cartMessage += `Сумма: ${totalPrice}`;
+
+        let message = `Имя: ${orderData.first_name}\nФамилия: ${orderData.last_name}\nEmail: ${orderData.email}\nАдрес: ${orderData.address}\nГород: ${orderData.city}\nПочтовый индекс: ${orderData.postal_code}\nСтрана: ${orderData.country}\nСпособ оплаты: ${orderData.payment_method}\n\n${cartMessage}`;
+
+        let whatsappUrl = `https://wa.me/+77078854531?text=${encodeURIComponent(message)}`;
+        console.log('Generated message:', message);
+        console.log('WhatsApp URL:', whatsappUrl);
+
+        // Сохраняем состояние заказа
+        localStorage.setItem('order_status', 'completed');
+
+        // Открываем WhatsApp в новом окне
+        window.open(whatsappUrl, '_blank');
+
+        // Перенаправляем на страницу подтверждения заказа
+        window.location.href = "{% url 'order_success' %}";
+    });
+});
+</script>
+{% endblock %}

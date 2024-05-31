@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Food, Cart, CartItem, Profile,  Order, OrderItem
-from .forms import ProfileForm, UserUpdateForm, OrderCreateForm, CustomPasswordChangeForm, AddFoodForm
+from .models import *
+from .forms import *
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.db import transaction
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
@@ -19,7 +20,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
 import logging
-
+from decimal import Decimal
 logger = logging.getLogger(__name__)
 
 def food_page(request):
@@ -69,19 +70,16 @@ def login_page(request):
 
 @login_required
 def view_cart(request):
-    foods = Food.objects.all()
     cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_items = {item.food.id: item.quantity for item in cart.items.all()}
+    total_price = sum(item.food.price * item.quantity for item in cart.items.all())
 
-    FOOD_TYPES = Food.FOOD_TYPES
     context = {
-        'foods': foods,
-        'FOOD_TYPES': FOOD_TYPES,
-        'cart_items': cart_items
+        'foods': Food.objects.all(),
+        'cart_items': cart_items,
+        'total_price': total_price
     }
     return render(request, "cart.html", context)
-
-
 
 @login_required
 def view_profile(request):
@@ -272,23 +270,29 @@ def save_order(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 @login_required
+def get_cart_total(request):
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    total_price = sum(item.food.price * item.quantity for item in cart.items.all())
+    return JsonResponse({'success': True, 'total_price': str(total_price)})
+
 def order_create(request):
-    cart_items = CartItem.objects.filter(user=request.user)
     if request.method == 'POST':
         form = OrderCreateForm(request.POST)
         if form.is_valid():
-            order = form.save(commit=False)
-            order.user = request.user
-            order.save()
-            for item in cart_items:
-                OrderItem.objects.create(order=order, product=item.food, price=item.food.price, quantity=item.quantity)
-            cart_items.delete()
-            return redirect('order_success', order_id=order.id)
+            with transaction.atomic():
+                order = form.save(commit=False)
+                order.user = request.user
+                order.save()
+                cart = Cart.objects.get(user=request.user)
+                cart_items = CartItem.objects.filter(cart=cart)
+                for item in cart_items:
+                    OrderItem.objects.create(order=order, food=item.food, price=item.food.price, quantity=item.quantity)
+                cart_items.delete()
+            return redirect('order_success')
     else:
         form = OrderCreateForm()
-    return render(request, 'shop/order_create.html', {'cart_items': cart_items, 'form': form})
+    return render(request, 'order_create.html', {'form': form})
 
-@login_required
-def order_success(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    return render(request, 'shop/order_success.html', {'order': order})
+def order_success(request):
+    return render(request, 'order_success.html')
+

@@ -1,0 +1,318 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-body {
+    flex-grow: 1;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.card-footer .btn {
+    flex: 1 1 22%;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 576px) {
+    .card-footer .btn {
+        flex: 1 1 45%;
+    }
+}
+
+.card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.total {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.hero {
+    background-image: url('https://image.starterapp.co/w:1920/aHR0cHM6Ly9jZG4uc2FuaXR5LmlvL2ltYWdlcy90YW00OHQ0by9wcm9kdWN0aW9uL2IwNjg0NzQ5M2UzNDc2MGRhZjk2MGRjZjk1M2Q0MzFkOWQ3Y2Y5ODEtMzIwMHgxMDUyLnBuZw==');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+    width: 100%;
+    height: 400px;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.hero p {
+    font-size: 1.5rem;
+}
+
+.scr {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.scr .row {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    width: 100%;
+}
+
+.scr .row::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.scroll-button {
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 10;
+}
+
+.scroll-button.prev {
+    position: absolute;
+    left: -50px;
+}
+
+.scroll-button.next {
+    position: absolute;
+    right: -50px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-md-4, .col-lg-3, .col-sm-6 {
+    padding: 15px;
+}
+
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card-body {
+    flex-grow: 1;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.card-footer .btn {
+    flex: 1 1 22%;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 576px) {
+    .card-footer .btn {
+        flex: 1 1 45%;
+    }
+}
+
+.card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.total {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.scr {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.scr .row {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    width: 100%;
+    position: relative;
+}
+
+.scr .row::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.scroll-button {
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.scroll-button.prev {
+    left: 10px;
+}
+
+.scroll-button.next {
+    right: 10px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.col-md-4, .col-lg-3, .col-sm-6 {
+    padding: 15px;
+}
+
+.bag {
+        background-image: url('https://image.starterapp.co/w:1920/aHR0cHM6Ly9jZG4uc2FuaXR5LmlvL2ltYWdlcy90YW00OHQ0by9wcm9kdWN0aW9uL2IwNjg0NzQ5M2UzNDc2MGRhZjk2MGRjZjk1M2Q0MzFkOWQ3Y2Y5ODEtMzIwMHgxMDUyLnBuZw==');
+        background-repeat: no-repeat;
+        background-size: cover;
+        padding: 20px;
+        width: 100%;
+        height: 500px;
+    }
+    .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .card-body {
+        flex-grow: 1;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .card-footer .btn {
+        flex: 1 1 22%;
+        margin-bottom: 5px;
+    }
+
+    @media (max-width: 576px) {
+        .card-footer .btn {
+            flex: 1 1 45%;
+        }
+    }
+
+    .card img {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .total {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .scr {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .scr .row {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        width: 100%;
+    }
+
+    .scr .row::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scroll-buttons {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .scroll-button {
+        background: rgba(255, 255, 255, 0.8);
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 10;
+    }
+
+    .scroll-button.prev {
+        position: absolute;
+        left: -50px;
+    }
+
+    .scroll-button.next {
+        position: absolute;
+        right: -50px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .col-md-4, .col-lg-3, .col-sm-6 {
+        padding: 15px;
+    }

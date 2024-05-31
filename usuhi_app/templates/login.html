@@ -1,4 +1,5 @@
-{% extends './base_login.html' %}
+{% extends './base_home.html' %}
+{% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% block title %}Вход{% endblock %}
 {% block content %}
@@ -8,7 +9,8 @@
 
             <form method="post">
                 {% csrf_token %}
-                {{ form }}
+                {{ form|crispy }}
+
                 <button class="btn btn-primary md-3">Войти</button>
                 <p>Если у вас нет аккаунта, пройдите <a href="{% url 'signup_page' %}"> регистрацию</a></p>
             </form>

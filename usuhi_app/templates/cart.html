@@ -5,32 +5,7 @@
 {% block title %}Корзина{% endblock %}
 
 {% block style %}
-<style>
-    .card {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
-    .card-body {
-        flex-grow: 1;
-    }
-    .card-footer {
-        display: flex;
-        justify-content: space-between;
-        gap: 5px;
-        flex-wrap: wrap;
-    }
-    .card-footer .btn {
-        flex: 1 1 45%;
-        margin-bottom: 5px;
-    }
-    @media (max-width: 576px) {
-        .card-footer .btn {
-            flex: 1 1 100%;
-        }
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/cart.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
 {% endblock %}
 
@@ -44,34 +19,263 @@
         <div class="row">
             {% for food in foods %}
                 {% if food.id in cart_items %}
-                <div class="col-md-4 col-sm-6 mb-3 cart-item" id="cart-item-{{ food.id }}">
-                    <div class="card h-100 shadow-sm">
-                        <img src="{{ food.image }}" alt="{{ food.name }}" class="card-img-top">
-                        <div class="card-body">
-                            <h3 class="card-title">{{ food.name }}</h3>
-                            <h4 class="mb-3">{{ food.price }}₸</h4>
-                            <p>Описание:</p>
-                            <p>{{ food.description|truncatewords:10 }}</p>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <button class="btn btn-danger remove-from-cart-btn" data-food-id="{{ food.id }}">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                            <button class="btn btn-secondary reduce-quantity-btn" data-food-id="{{ food.id }}">
-                                <i class="bi bi-dash-circle"></i>
-                            </button>
-                            <button class="btn btn-primary add-to-cart-btn" data-food-id="{{ food.id }}" data-quantity="{{ cart_items|get_item:food.id }}" data-add-to-cart-url="{% url 'modify_cart' %}" id="cart-quantity-{{ food.id }}">
-                                {{ cart_items|get_item:food.id }}
-                            </button>
-                            <button class="btn btn-secondary increase-quantity-btn" data-food-id="{{ food.id }}">
-                                <i class="bi bi-plus-circle"></i>
-                            </button>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4 cart-item" id="cart-item-{{ food.id }}">
+                        <div class="card h-100 shadow-sm">
+                            <img src="{{ food.image }}" alt="{{ food.name }}" class="card-img-top">
+                            <div class="card-body">
+                                <h3 class="card-title">{{ food.name }}</h3>
+                                <h4 class="mb-3">{{ food.price }}₸</h4>
+                                <p>Описание:</p>
+                                <p>{{ food.description|truncatewords:10 }}</p>
+                                <p>Количество: <span class="quantity">{{ cart_items|get_item:food.id }}</span></p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-danger remove-from-cart-btn" data-food-id="{{ food.id }}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <button class="btn btn-secondary reduce-quantity-btn" data-food-id="{{ food.id }}">
+                                    <i class="bi bi-dash-circle"></i>
+                                </button>
+                                <button class="btn btn-primary add-to-cart-btn" data-food-id="{{ food.id }}"
+                                        data-quantity="{{ cart_items|get_item:food.id }}"
+                                        data-add-to-cart-url="{% url 'modify_cart' %}"
+                                        id="cart-quantity-{{ food.id }}">
+                                    {{ cart_items|get_item:food.id }}
+                                </button>
+                                <button class="btn btn-secondary increase-quantity-btn"
+                                        data-food-id="{{ food.id }}">
+                                    <i class="bi bi-plus-circle"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
                 {% endif %}
             {% endfor %}
+        </div>
+        <div class="row justify-content-end block-total">
+            <div class="col-md-4 col-sm-6 mt-4">
+                <div class="total">Сумма: <span id="total-price">{{ total_price }}₸</span></div>
+                <a href="{% url 'order_create' %}" class="btn btn-primary btn-block">Оформить заказ</a>
+            </div>
         </div>
     </div>
 </section>
 {% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    console.log('Cart script loaded');
+
+    function saveCartToLocalStorage() {
+        let cartItems = [];
+        document.querySelectorAll('.cart-item').forEach(item => {
+            let nameElement = item.querySelector('.card-title').textContent.trim();
+            let priceElement = item.querySelector('.card-body h4').textContent.trim();
+            let quantityElement = item.querySelector('.quantity').textContent.trim();
+            cartItems.push({name: nameElement, price: priceElement, quantity: quantityElement});
+        });
+        localStorage.setItem('cart_items', JSON.stringify(cartItems));
+        let totalPrice = document.getElementById('total-price').textContent.trim();
+        localStorage.setItem('total_price', totalPrice);
+    }
+
+    const reduceQuantityButtons = document.querySelectorAll('.reduce-quantity-btn');
+    const increaseQuantityButtons = document.querySelectorAll('.increase-quantity-btn');
+    const removeFromCartButtons = document.querySelectorAll('.remove-from-cart-btn');
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+
+    function disableButtons(buttons) {
+        buttons.forEach(button => button.disabled = true);
+    }
+
+    function enableButtons(buttons) {
+        buttons.forEach(button => button.disabled = false);
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateCartDisplay(foodId, quantity) {
+        const cartQuantityElement = document.getElementById(`cart-quantity-${foodId}`);
+
+        if (cartQuantityElement) {
+            if (quantity > 0) {
+                cartQuantityElement.innerHTML = `${quantity}`;
+                cartQuantityElement.classList.add('btn-success');
+                cartQuantityElement.classList.remove('btn-primary');
+            } else if (quantity === 0) {
+                cartQuantityElement.innerHTML = `<i class="bi bi-cart"></i>`;
+                cartQuantityElement.classList.add('btn-primary');
+                cartQuantityElement.classList.remove('btn-success');
+            }
+        }
+    }
+
+    function updateTotalDisplay(total) {
+        const totalElement = document.getElementById('total-price');
+        if (totalElement) {
+            totalElement.innerHTML = `${total}₸`;
+            saveCartToLocalStorage();
+        }
+    }
+
+    function checkIfCartIsEmpty() {
+        const cartItems = document.querySelectorAll('.cart-item');
+        const totalPriceBlock = document.querySelector('.block-total');
+        const cartEmptyMessage = document.getElementById('cart-empty-message');
+
+        if (cartEmptyMessage && totalPriceBlock) {
+            if (cartItems.length === 0) {
+                totalPriceBlock.style.display = 'none';
+                cartEmptyMessage.style.display = 'block';
+            } else {
+                cartEmptyMessage.style.display = 'none';
+                totalPriceBlock.style.display = 'block';
+            }
+        }
+    }
+
+    function updateTotalPrice() {
+        $.ajax({
+            type: 'GET',
+            url: '/cart/total/',
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    updateTotalDisplay(response.total_price);
+                } else {
+                    alert('Ошибка при обновлении общей суммы: ' + response.error);
+                }
+            },
+            error: function (xhr, textStatus, error) {
+                alert('Произошла ошибка при обновлении общей суммы: ' + error);
+            }
+        });
+    }
+
+    function handleButtonClick(button, action) {
+        const foodId = parseInt(button.dataset.foodId);
+        if (isNaN(foodId)) {
+            alert('Ошибка: food_id должен быть числом!');
+            return;
+        }
+
+        const csrfToken = getCookie('csrftoken');
+        disableButtons([button]);
+
+        let url, data;
+        if (action === 'add') {
+            url = button.dataset.addToCartUrl;
+            data = {
+                'food_id': foodId,
+                'quantity': 1,
+                'action': 'add'
+            };
+        } else if (action === 'remove') {
+            url = '/remove_from_cart/';
+            data = {
+                'food_id': foodId
+            };
+        } else if (action === 'increase') {
+            url = '/modify_cart/';
+            data = {
+                'food_id': foodId,
+                'quantity': 1,
+                'action': 'add'
+            };
+        } else if (action === 'reduce') {
+            url = '/modify_cart/';
+            data = {
+                'food_id': foodId,
+                'quantity': 1,
+                'action': 'remove'
+            };
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    if (action === 'remove' || action === 'reduce') {
+                        if (response.quantity > 0) {
+                            updateCartDisplay(foodId, response.quantity);
+                        } else {
+                            const cartItemElement = document.getElementById(`cart-item-${foodId}`);
+                            if (cartItemElement) {
+                                cartItemElement.remove();
+                            }
+                            updateCartDisplay(foodId, response.quantity);
+                            checkIfCartIsEmpty();
+                        }
+                    } else {
+                        updateCartDisplay(foodId, response.quantity);
+                    }
+                    updateTotalPrice();  // Обновление общей суммы
+                } else {
+                    alert('Ошибка при выполнении действия: ' + response.error);
+                }
+            },
+            error: function (xhr, textStatus, error) {
+                alert('Произошла ошибка при выполнении запроса: ' + error);
+            },
+            complete: function () {
+                enableButtons([button]);
+            }
+        });
+    }
+
+    addToCartButtons.forEach(button => {
+        const foodId = parseInt(button.dataset.foodId);
+        const initialQuantity = parseInt(button.getAttribute('data-quantity')) || 0;
+        updateCartDisplay(foodId, initialQuantity);
+
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'add');
+        });
+    });
+
+    removeFromCartButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'remove');
+        });
+    });
+
+    increaseQuantityButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'increase');
+        });
+    });
+
+    reduceQuantityButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            handleButtonClick(button, 'reduce');
+        });
+    });
+
+    // Инициализация состояния при загрузке страницы
+    checkIfCartIsEmpty();
+    updateTotalPrice();
+});
+</script>
+{% endblock %}
+

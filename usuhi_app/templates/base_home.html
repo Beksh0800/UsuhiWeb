@@ -8,35 +8,42 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'icons/font/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="{% static 'js/cart.js' %}"></script>
+
     <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        console.log('Loading cart.js');
+        var user_authenticated = {% if user.is_authenticated %}true{% else %}false{% endif %};
+    </script>
+    <script src="{% static 'js/cart.js' %}"></script>
+
+    <script>
+        console.log('Loading scroll.js');
+    </script>
+    <script src="{% static 'js/scroll.js' %}"></script>
     {% block style %}{% endblock %}
 </head>
 <body>
-    <div class="d-flex flex-column min-vh-100">
-        <header class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'food_page' %}">MANGA</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'about_page' %}">О нас</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Рестораны</a>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">RU</a>
-                        </li>
-                        {% if user.is_authenticated %}
+<div class="d-flex flex-column min-vh-100">
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'food_page' %}">MANGA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'about_page' %}">О нас</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
                                 Личный кабинет
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -45,39 +52,53 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'cart' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
-  <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"></path>
-</svg></a>
+                            <a class="nav-link" href="{% url 'cart' %}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-cart" viewBox="0 0 16 16">
+                                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"></path>
+                                </svg>
+                            </a>
                         </li>
-                        {% else %}
+                    {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'signup_page' %}">Регистрация</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login_page' %}">Вход</a>
                         </li>
-                        {% endif %}
-                        {% if user.is_superuser %}
+                    {% endif %}
+                    {% if user.is_superuser %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'all_food_page' %}">Все блюда</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'add_food_page' %}">Добавить</a>
                         </li>
-                        {% endif %}
-                    </ul>
-                </div>
+                    {% endif %}
+                </ul>
             </div>
-        </header>
-        <main class="flex-grow-1">
-            {% block content %}{% endblock %}
-        </main>
-        <footer class="bg-dark text-white text-center py-3 mt-auto">
-            <div class="container">
-                <p>© 2024 Арыстан Бекнұр.</p>
-            </div>
-        </footer>
-    </div>
-    {% block scripts %}{% endblock %}
+        </div>
+    </header>
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="bg-dark text-white text-center py-3 mt-auto">
+        <div class="container">
+            <p>© 2024 Арыстан Бекнұр.</p>
+        </div>
+    </footer>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let orderStatus = localStorage.getItem('order_status');
+        if (orderStatus === 'completed') {
+            localStorage.removeItem('order_status');
+            window.location.href = "{% url 'order_success' %}";
+        }
+    });
+</script>
+{% endblock %}
 </body>
 </html>

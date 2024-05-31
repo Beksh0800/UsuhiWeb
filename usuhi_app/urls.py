@@ -19,7 +19,9 @@ urlpatterns = [
     path('remove_from_cart/', views.remove_from_cart, name='remove_from_cart'),
     path('modify_cart/', views.modify_cart, name='modify_cart'),
     path('save_order/', views.save_order, name='save_order'),
-    path('order/create/', views.order_create, name='order_create'),
-    path('order/success/<int:order_id>/', views.order_success, name='order_success'),
     path('profile/change-password/', views.CustomPasswordChangeView.as_view(), name='change_password'),
+    path('cart/total/', views.get_cart_total, name='get_cart_total'),
+    path('order/create/', views.order_create, name='order_create'),
+    path('order/success/', views.order_success, name='order_success'),
+
 ]
