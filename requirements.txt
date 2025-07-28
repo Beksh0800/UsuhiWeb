@@ -1,0 +1,12 @@
+asgiref==3.9.1
+crispy-bootstrap5==2025.6
+dataclasses==0.6
+Django==3.2.25
+django-crispy-forms==2.4
+djongo==1.2.31
+dnspython==2.7.0
+pip==25.1.1
+pymongo==4.13.2
+pytz==2025.2
+sqlparse==0.5.3
+tzdata==2025.2
