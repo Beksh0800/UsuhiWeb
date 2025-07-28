@@ -207,24 +207,21 @@ def modify_cart(request):
 
         food = get_object_or_404(Food, id=food_id)
         cart, _ = Cart.objects.get_or_create(user=request.user)
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, food=food)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, food=food, defaults={'quantity': 1})
 
-        if created:
-            cart_item.quantity = 0
-
-        if action == 'add':
-            cart_item.quantity += quantity
-        elif action == 'remove':
-            cart_item.quantity -= quantity
-            if cart_item.quantity <= 0:
-                cart_item.delete()
-                return JsonResponse({'success': True, 'quantity': 0})
-
-        if cart_item.id:
+        if not created:
+            if action == 'add':
+                cart_item.quantity += quantity
+            elif action == 'remove':
+                cart_item.quantity -= quantity
+                if cart_item.quantity <= 0:
+                    cart_item.delete()
+                    return JsonResponse({'success': True, 'quantity': 0})
             cart_item.save()
             return JsonResponse({'success': True, 'quantity': cart_item.quantity})
         else:
-            return JsonResponse({'success': True, 'quantity': 0})
+            # Если только что создан, quantity уже 1
+            return JsonResponse({'success': True, 'quantity': cart_item.quantity})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
@@ -295,4 +292,3 @@ def order_create(request):
 
 def order_success(request):
     return render(request, 'order_success.html')
-
